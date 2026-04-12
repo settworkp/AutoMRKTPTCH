@@ -7,10 +7,11 @@
     "send_button": "#patched-chat > div.chat-container > div.\\@relative > form > div > div.chat-form-controls > button"
   },
   "timing": {
-    "page_load_wait": 5000,
-    "after_tab_click": 1500,
-    "after_type": 1000,
-    "after_send": 2000
+    "page_load_wait":     20000,
+    "after_cookies":      20000,
+    "after_tab_click":    10000,
+    "after_type":          5000,
+    "after_send":          5000
   },
   "browser": {
     "headless": true,
