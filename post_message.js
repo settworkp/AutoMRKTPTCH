@@ -26,6 +26,21 @@ function parseCookies(raw) {
   }).filter(c => c.name && c.value);
 }
 
+// Attend qu'un sélecteur soit présent avec retry toutes les 2s
+async function waitForSelectorRetry(page, selector, totalMs = 60000) {
+  const start = Date.now();
+  while (Date.now() - start < totalMs) {
+    try {
+      await page.waitForSelector(selector, { timeout: 5000 });
+      return true;
+    } catch (_) {
+      console.log(`   🔄 Sélecteur pas encore prêt, retry...`);
+      await wait(2000);
+    }
+  }
+  throw new Error(`❌ Sélecteur introuvable après ${totalMs / 1000}s : ${selector}`);
+}
+
 (async () => {
   console.log('🚀 Démarrage du navigateur...');
   const browser = await puppeteer.launch({
@@ -59,14 +74,19 @@ function parseCookies(raw) {
   console.log('   ✅ Connecté au compte.');
 
   // ── ÉTAPE 3 : Cliquer sur Marketplace ────────────────────────────────────
-  console.log("\n🛒 [ÉTAPE 3] Clic sur l'onglet Marketplace...");
-  await page.waitForSelector(config.selectors.marketplace_tab, { timeout: 15000 });
+  console.log("\n🛒 [ÉTAPE 3] Attente et clic sur l'onglet Marketplace...");
+  await waitForSelectorRetry(page, config.selectors.marketplace_tab, 30000);
   await page.click(config.selectors.marketplace_tab);
+  console.log('   ✅ Onglet Marketplace cliqué.');
   await wait(config.timing.after_tab_click); // 10s
 
+  // Scroll vers le bas pour forcer le chargement du chat
+  await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+  await wait(2000);
+
   // ── ÉTAPE 4 : Saisir le message ───────────────────────────────────────────
-  console.log('\n✏️  [ÉTAPE 4] Saisie du message...');
-  await page.waitForSelector(config.selectors.chat_input, { timeout: 15000 });
+  console.log('\n✏️  [ÉTAPE 4] Attente du champ chat...');
+  await waitForSelectorRetry(page, config.selectors.chat_input, 60000);
   await page.click(config.selectors.chat_input);
   await page.evaluate((sel, txt) => {
     const el = document.querySelector(sel);
@@ -75,12 +95,12 @@ function parseCookies(raw) {
     el.dispatchEvent(new Event('input',  { bubbles: true }));
     el.dispatchEvent(new Event('change', { bubbles: true }));
   }, config.selectors.chat_input, message);
-  console.log('   Message saisi.');
+  console.log('   ✅ Message saisi.');
   await wait(config.timing.after_type); // 5s
 
   // ── ÉTAPE 5 : Envoyer ─────────────────────────────────────────────────────
   console.log('\n📤 [ÉTAPE 5] Envoi du message...');
-  await page.waitForSelector(config.selectors.send_button, { timeout: 15000 });
+  await waitForSelectorRetry(page, config.selectors.send_button, 15000);
   await page.click(config.selectors.send_button);
   await wait(config.timing.after_send); // 5s
 
