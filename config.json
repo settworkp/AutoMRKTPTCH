@@ -2,9 +2,9 @@
   "target_url": "https://patched.to/",
   "message": "[**💎🚀📈 ＳＩＧＮＡＴＵＲＥ ＳＰＯＴ ＦＯＲ ＳＡＬＥ 💎 ＧＲＯＷ ＹＯＵＲ ＢＵＳＩＮＥＳＳ ＮＯＷ 📈🚀💎**](https://patched.to/Thread-selling-my-signature-spots-boost-your-sales)",
   "selectors": {
-    "marketplace_tab": "#patched-chat > div.chat-container > div.\\@relative > div.chat-channels-wrapper > ul > li:nth-child(2) > button",
-    "chat_input": "#patched-chat > div.chat-container > div.\\@relative > form > div > div.chat-form-input-editable",
-    "send_button": "#patched-chat > div.chat-container > div.\\@relative > form > div > div.chat-form-controls > button"
+    "marketplace_tab": "#patched-chat button.active",
+    "chat_input": "#patched-chat div.chat-form-input-editable",
+    "send_button": "#patched-chat form button, #patched-chat form svg"
   },
   "timing": {
     "page_load_wait":     20000,
